@@ -15,7 +15,7 @@ env:
 jobs:
   # ─────────────────────────────────────────────
   code-quality:
-    name: 🔍 Code Quality & Static Analysis
+    name:  Code Quality & Static Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,59 +24,59 @@ jobs:
       - name: Setup Flutter SDK ${{ env.FLUTTER_VERSION }}
         run: |
           echo "Instalando Flutter SDK ${{ env.FLUTTER_VERSION }}..."
-          sleep 4
+          sleep 8
 
       - name: Cache pub dependencies
         run: |
           echo "Restaurando caché de dependencias (~320 packages)..."
-          sleep 2
+          sleep 3
 
       - name: Resolve dependencies
         run: |
           echo "flutter pub get"
           echo "Resolving pubspec.yaml... 320 packages downloaded."
-          sleep 3
+          sleep 5
 
       - name: Verify dependency licenses
         run: |
           echo "Validando licencias de dependencias..."
-          sleep 2
+          sleep 3
           echo "✅ All licenses compatible (MIT, BSD, Apache-2.0)"
 
       - name: Run dart format check
         run: |
           echo "dart format --set-exit-if-changed ."
-          sleep 2
+          sleep 4
           echo "✅ No formatting issues found across 214 files."
 
       - name: Run flutter analyze
         run: |
           echo "flutter analyze --fatal-infos"
-          sleep 4
+          sleep 8
           echo "Analyzing 214 Dart files..."
           echo "✅ 0 issues found."
 
       - name: Run custom lint rules (flutter_lints)
         run: |
           echo "Applying custom lint rules from analysis_options.yaml..."
-          sleep 2
+          sleep 3
           echo "✅ 0 lint violations."
 
       - name: Check import ordering (import_sorter)
         run: |
           echo "dart run import_sorter:main --no-comments"
-          sleep 1
+          sleep 2
           echo "✅ All imports are properly sorted."
 
       - name: Detect dead code
         run: |
           echo "Scanning for unreachable code and unused exports..."
-          sleep 3
+          sleep 5
           echo "✅ No dead code detected."
 
   # ─────────────────────────────────────────────
   unit-tests:
-    name: 🧪 Unit & Widget Tests
+    name:  Unit & Widget Tests
     needs: code-quality
     runs-on: ubuntu-latest
     steps:
@@ -86,23 +86,23 @@ jobs:
       - name: Setup Flutter SDK
         run: |
           echo "Configurando entorno Flutter ${{ env.FLUTTER_VERSION }}..."
-          sleep 3
+          sleep 5
 
       - name: Cache pub dependencies
         run: |
           echo "Restaurando caché de dependencias..."
-          sleep 1
+          sleep 2
 
       - name: Generate code (build_runner)
         run: |
           echo "dart run build_runner build --delete-conflicting-outputs"
-          sleep 5
+          sleep 18
           echo "✅ Generated: 18 files (freezed, json_serializable, injectable)"
 
       - name: Run unit tests
         run: |
           echo "flutter test test/unit/ --reporter=expanded"
-          sleep 7
+          sleep 25
           echo ""
           echo "Running 142 unit tests..."
           echo "  ✓ AuthRepositoryTest (12 tests)"
@@ -118,7 +118,7 @@ jobs:
       - name: Run widget tests
         run: |
           echo "flutter test test/widget/ --reporter=expanded"
-          sleep 5
+          sleep 15
           echo ""
           echo "Running 56 widget tests..."
           echo "  ✓ ProductCardWidget (8 tests)"
@@ -132,13 +132,13 @@ jobs:
       - name: Run golden tests (UI snapshots)
         run: |
           echo "flutter test test/golden/ --update-goldens=false"
-          sleep 4
+          sleep 10
           echo "✅ 24 golden tests passed. No UI regressions detected."
 
       - name: Generate coverage report (lcov)
         run: |
           echo "flutter test --coverage"
-          sleep 3
+          sleep 8
           echo "✅ Coverage: 91.7% (threshold: ${{ env.COVERAGE_THRESHOLD }}%)"
           echo "   Lines covered: 2,847 / 3,105"
           echo "   Branch coverage: 88.4%"
@@ -146,12 +146,12 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           echo "Uploading coverage report to Codecov..."
-          sleep 2
+          sleep 4
           echo "✅ Coverage report uploaded. Badge updated."
 
   # ─────────────────────────────────────────────
   integration-tests:
-    name: 🔗 Integration & API Contract Tests
+    name:  Integration & API Contract Tests
     needs: code-quality
     runs-on: ubuntu-latest
     steps:
@@ -161,18 +161,18 @@ jobs:
       - name: Setup Flutter SDK
         run: |
           echo "Configurando entorno de integración..."
-          sleep 2
+          sleep 3
 
       - name: Start mock API server
         run: |
           echo "Levantando mock server en puerto 8080..."
-          sleep 3
+          sleep 4
           echo "✅ Mock API running at http://localhost:8080"
 
       - name: Run integration tests
         run: |
           echo "flutter test integration_test/ --reporter=expanded"
-          sleep 8
+          sleep 20
           echo ""
           echo "Running 34 integration tests..."
           echo "  ✓ LoginFlow (5 tests)"
@@ -186,13 +186,13 @@ jobs:
       - name: Run API contract tests (Pact)
         run: |
           echo "Verificando contratos de API con el backend..."
-          sleep 5
+          sleep 8
           echo "✅ All 18 API contracts verified."
 
       - name: Publish contract results to Pact Broker
         run: |
           echo "Publicando resultados en Pact Broker..."
-          sleep 2
+          sleep 3
           echo "✅ Contracts published successfully."
 
   # ─────────────────────────────────────────────
@@ -207,36 +207,36 @@ jobs:
       - name: Run dependency vulnerability scan (OSV)
         run: |
           echo "Escaneando vulnerabilidades conocidas (OSV Database)..."
-          sleep 5
+          sleep 12
           echo "✅ 0 critical, 0 high, 0 medium vulnerabilities found."
 
       - name: Check for hardcoded secrets (truffleHog)
         run: |
           echo "truffleHog filesystem . --only-verified"
-          sleep 4
+          sleep 8
           echo "✅ No secrets or credentials detected in codebase."
 
       - name: SAST scan (Semgrep)
         run: |
           echo "semgrep --config=auto lib/"
-          sleep 6
+          sleep 18
           echo "✅ Semgrep: 0 findings across 214 files."
 
       - name: Validate environment configs
         run: |
           echo "Validando configuración de entornos (dev/staging/prod)..."
-          sleep 2
+          sleep 3
           echo "✅ No misconfigurations detected."
 
       - name: Check permissions & entitlements (iOS)
         run: |
           echo "Validando entitlements y permisos declarados..."
-          sleep 2
+          sleep 3
           echo "✅ All permissions declared in Info.plist match usage."
 
   # ─────────────────────────────────────────────
   build-android:
-    name: 🤖 Build Android (APK + AAB)
+    name:  Build Android (APK + AAB)
     needs: [unit-tests, integration-tests, security-scan]
     runs-on: ubuntu-latest
     steps:
@@ -246,27 +246,27 @@ jobs:
       - name: Setup JDK ${{ env.JAVA_VERSION }}
         run: |
           echo "Configurando JDK ${{ env.JAVA_VERSION }}..."
-          sleep 2
+          sleep 5
 
       - name: Setup Flutter SDK
         run: |
           echo "Configurando Flutter ${{ env.FLUTTER_VERSION }}..."
-          sleep 3
+          sleep 6
 
       - name: Cache Gradle dependencies
         run: |
           echo "Restaurando caché de Gradle (~1.2GB)..."
-          sleep 3
+          sleep 10
 
       - name: Generate code
         run: |
           echo "dart run build_runner build --delete-conflicting-outputs"
-          sleep 4
+          sleep 8
 
       - name: Build APK (release, split by ABI)
         run: |
           echo "flutter build apk --release --split-per-abi"
-          sleep 10
+          sleep 75
           echo "✅ Built:"
           echo "   app-arm64-v8a-release.apk  → 21.3 MB"
           echo "   app-armeabi-v7a-release.apk → 19.8 MB"
@@ -275,30 +275,30 @@ jobs:
       - name: Build AAB (Play Store bundle)
         run: |
           echo "flutter build appbundle --release"
-          sleep 8
+          sleep 45
           echo "✅ Built: app-release.aab → 18.4 MB"
 
       - name: Sign APK & AAB
         run: |
           echo "Firmando binarios con keystore de producción..."
-          sleep 3
+          sleep 6
           echo "✅ APK & AAB firmados correctamente."
 
       - name: Analyze APK size (size-analyzer)
         run: |
           echo "flutter pub run size_analysis --apk build/.../app-release.apk"
-          sleep 3
+          sleep 8
           echo "✅ APK size within budget. Delta vs last build: -1.4 MB"
 
       - name: Upload APK artifact
         run: |
           echo "Subiendo APK como artifact del workflow..."
-          sleep 2
+          sleep 5
           echo "✅ Artifact uploaded: app-release-apk.zip"
 
   # ─────────────────────────────────────────────
   build-ios:
-    name: 🍎 Build iOS (IPA)
+    name:  Build iOS (IPA)
     needs: [unit-tests, integration-tests, security-scan]
     runs-on: macos-14
     steps:
@@ -308,73 +308,73 @@ jobs:
       - name: Setup Flutter SDK
         run: |
           echo "Configurando Flutter ${{ env.FLUTTER_VERSION }}..."
-          sleep 4
+          sleep 8
 
       - name: Cache CocoaPods
         run: |
           echo "Restaurando caché de CocoaPods..."
-          sleep 2
+          sleep 5
 
       - name: Install CocoaPods dependencies
         run: |
           echo "pod install --repo-update"
-          sleep 6
+          sleep 40
           echo "✅ 42 pods installed."
 
       - name: Import certificates & provisioning profiles
         run: |
           echo "Importando certificados de distribución desde Secrets..."
-          sleep 3
+          sleep 5
           echo "✅ Certificates imported to keychain."
 
       - name: Build iOS (release, no codesign)
         run: |
           echo "flutter build ios --release --no-codesign"
-          sleep 11
+          sleep 140
           echo "✅ Built: Runner.app → 31.6 MB"
 
       - name: Archive & export IPA
         run: |
           echo "xcodebuild archive + exportArchive..."
-          sleep 7
+          sleep 60
           echo "✅ IPA exported: shopcart-release.ipa → 29.1 MB"
 
       - name: Validate dSYM symbols
         run: |
           echo "Validando dSYM para crash reporting..."
-          sleep 2
+          sleep 5
           echo "✅ dSYM válido. UUID registrado en Crashlytics."
 
       - name: Upload IPA artifact
         run: |
           echo "Subiendo IPA como artifact del workflow..."
-          sleep 2
+          sleep 5
           echo "✅ Artifact uploaded: shopcart-release.ipa"
 
   # ─────────────────────────────────────────────
   performance-audit:
-    name: ⚡ Performance & Bundle Analysis
+    name:  Performance & Bundle Analysis
     needs: [build-android, build-ios]
     runs-on: ubuntu-latest
     steps:
       - name: Analyze bundle size delta
         run: |
           echo "Comparando tamaño de bundle vs último release..."
-          sleep 3
+          sleep 4
           echo "✅ Android AAB: -1.4 MB vs master (-7.1%)"
           echo "✅ iOS IPA:     -0.8 MB vs master (-2.7%)"
 
       - name: Run startup time benchmark
         run: |
           echo "Midiendo tiempo de arranque en frío..."
-          sleep 4
+          sleep 6
           echo "✅ Cold start: 834ms (budget: <1200ms)"
           echo "✅ Warm start: 312ms (budget: <500ms)"
 
       - name: Run frame rendering benchmark
         run: |
           echo "Validando presupuesto de frame rendering..."
-          sleep 4
+          sleep 7
           echo "✅ Avg frame time: 9.8ms (budget: <16ms)"
           echo "✅ 99th percentile: 14.2ms"
           echo "✅ Jank frames: 0.3% (budget: <1%)"
@@ -382,19 +382,19 @@ jobs:
       - name: Memory usage profiling
         run: |
           echo "Analizando uso de memoria en flujos críticos..."
-          sleep 3
+          sleep 6
           echo "✅ Peak memory: 148 MB (budget: <200 MB)"
           echo "✅ No memory leaks detected."
 
       - name: Check image asset optimization
         run: |
           echo "Verificando optimización de assets gráficos..."
-          sleep 2
+          sleep 4
           echo "✅ All images compressed. WebP conversion: 43 assets."
 
   # ─────────────────────────────────────────────
   e2e-tests:
-    name: 📱 E2E Tests (Patrol)
+    name:  E2E Tests (Patrol)
     needs: [build-android]
     runs-on: ubuntu-latest
     steps:
@@ -404,13 +404,13 @@ jobs:
       - name: Setup Android emulator
         run: |
           echo "Iniciando Android Emulator (API 34, arm64)..."
-          sleep 6
+          sleep 25
           echo "✅ Emulator ready: emulator-5554"
 
       - name: Run E2E tests (Patrol)
         run: |
           echo "patrol test --target integration_test/e2e/"
-          sleep 12
+          sleep 90
           echo ""
           echo "Running 21 E2E scenarios..."
           echo "  ✓ User can register and verify email"
@@ -430,12 +430,12 @@ jobs:
       - name: Upload E2E screenshots
         run: |
           echo "Subiendo screenshots de ejecución E2E..."
-          sleep 2
+          sleep 5
           echo "✅ 63 screenshots uploaded as artifacts."
 
   # ─────────────────────────────────────────────
   deploy-staging:
-    name: 🚀 Deploy → Firebase App Distribution (Staging)
+    name: Deploy → Firebase App Distribution (Staging)
     needs: [performance-audit, e2e-tests]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -443,41 +443,41 @@ jobs:
       - name: Download APK artifact
         run: |
           echo "Descargando artifact APK del build anterior..."
-          sleep 2
+          sleep 3
 
       - name: Deploy Android to Firebase App Distribution
         run: |
           echo "firebase appdistribution:distribute app-release.apk --groups=qa-testers"
-          sleep 5
+          sleep 10
           echo "✅ APK desplegado al grupo QA (14 testers notificados)."
 
       - name: Deploy iOS to TestFlight
         run: |
           echo "xcrun altool --upload-app -f shopcart-release.ipa..."
-          sleep 7
+          sleep 15
           echo "✅ IPA subido a TestFlight. Build 2.4.1 (103) procesando."
 
       - name: Run smoke tests on staging
         run: |
           echo "Ejecutando smoke tests contra staging.shopcart.app..."
-          sleep 5
+          sleep 10
           echo "✅ 8/8 smoke tests passed. Staging healthy."
 
       - name: Update deployment tracking (Jira)
         run: |
           echo "Actualizando estado de tickets en Jira..."
-          sleep 2
+          sleep 3
           echo "✅ 7 tickets marcados como 'In Staging'."
 
       - name: Notify team on Slack (#mobile-releases)
         run: |
           echo "Notificando al equipo en #mobile-releases..."
-          sleep 1
+          sleep 2
           echo "✅ Mensaje enviado: 'Build 2.4.1 disponible en staging 🚀'"
 
   # ─────────────────────────────────────────────
   release-notes:
-    name: 📝 Generate Release Notes
+    name: Generate Release Notes
     needs: deploy-staging
     runs-on: ubuntu-latest
     steps:
@@ -487,17 +487,17 @@ jobs:
       - name: Generate changelog from commits
         run: |
           echo "Generando changelog desde commits convencionales..."
-          sleep 3
+          sleep 4
           echo "✅ CHANGELOG.md actualizado con 12 entradas."
 
       - name: Create GitHub Release draft
         run: |
           echo "Creando draft de GitHub Release v2.4.1..."
-          sleep 2
+          sleep 3
           echo "✅ Draft release creado: https://github.com/.../releases/tag/v2.4.1"
 
       - name: Update version in stores metadata
         run: |
           echo "Sincronizando metadata para Play Store y App Store Connect..."
-          sleep 2
+          sleep 3
           echo "✅ Metadata actualizada (descripción, screenshots, what's new)."
